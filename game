@@ -1,0 +1,51 @@
+def mask_word(word):
+    return '*' * len(word)
+def uncover_word(answer_word, masked_word, guessed_letter):
+    new_masked_word = ''
+    for i in range(len(answer_word)):
+        if answer_word[i] == guessed_letter:
+            new_masked_word += guessed_letter
+        else:
+            new_masked_word += masked_word[i]
+    return new_masked_word
+
+import random
+
+def get_random_word(word_list):
+    return random.choice(word_list)
+
+def guess_letter(game, letter):
+    if game['remaining_misses'] <= 0:
+        return 'You already lost this game!'
+
+    if game['masked_word'] == game['answer_word']:
+        return 'You already won this game!'
+
+    if letter in game['previous_guesses']:
+        return 'You already guessed that!'
+
+    game['previous_guesses'].append(letter)
+
+    if letter in game['answer_word']:
+        game['masked_word'] = uncover_word(game['answer_word'], game['masked_word'], letter)
+        if game['masked_word'] == game['answer_word']:
+            return 'You guessed correctly!'
+        else:
+            return 'You guessed a letter!'
+
+    else:
+        game['remaining_misses'] -= 1
+        if game['remaining_misses'] <= 0:
+            return 'You are out of guesses! Game over.'
+        else:
+            return 'You guessed a letter!'
+def start_new_game(word_list):
+    answer_word = get_random_word(word_list)
+    masked_word = mask_word(answer_word)
+    game = {
+        'answer_word': answer_word,
+        'masked_word': masked_word,
+        'remaining_misses': 5,
+        'previous_guesses': []
+    }
+    return game
